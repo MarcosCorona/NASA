@@ -68,12 +68,14 @@ object Main extends App{
   nasa.show(5)
 
   //- ¿Cuáles son los distintos protocolos web utilizados? Agrúpalos
+  println("distitntos protocolos web--")
   nasa.select(col("protocol"))
     .distinct()
     .show()
 
   //- ¿Cuáles son los códigos de estado más comunes en la web? Agrúpalos y ordénalos
   //para ver cuál es el más común.
+  println("Cod estado mas comunes--")
   nasa.select(col("status"))
     .groupBy(col("status"))
   .agg(count(col("status")).alias("total"))
@@ -81,6 +83,7 @@ object Main extends App{
   .show()
 
   //- ¿Y los métodos de petición (verbos) más utilizados?
+  println("Metodos de petición mas usados--")
   nasa.select(col("method"))
     .groupBy(col("method"))
     .agg(count(col("method")).alias("total"))
@@ -88,19 +91,22 @@ object Main extends App{
     .show()
 
   //- ¿Qué recurso tuvo la mayor transferencia de bytes de la página web?
+  println("Recurso web con mas transferencia de bytes--")
   nasa.select(col("endpoint"),col("content_size"))
   .orderBy(col("content_size").desc)
   .show(1, truncate=false)
 
   //- Además, queremos saber que recurso de nuestra web es el que más tráfico recibe. Es
   //decir, el recurso con más registros en nuestro log
+
+  println("Recurso web con mas trafico--")
   nasa.select(col("endpoint")).groupBy(col("endpoint"))
   .agg(count(col("endpoint")).alias("total"))
   .orderBy(col("total").desc)
   .show(1,truncate = false)
 
   //- ¿Qué días la web recibió más tráfico?
-
+  println("Dias + trafico web--")
   nasa.select(col("timestamp"))
     .groupBy(col("timestamp")
       .cast("date")
@@ -110,10 +116,32 @@ object Main extends App{
   .show(1)
 
 //- ¿Cuáles son los hosts son los más frecuentes?
+
+  println("Host + frecuentes--")
   nasa.select(col("host")).groupBy(col("host"))
   .agg(count("*").alias("Visitas"))
-  .orderBy(desc(col("Visitas")))
+  .orderBy(col("Visitas").desc)
   .show(10)
+
+//- ¿A qué horas se produce el mayor número de tráfico en la web?
+
+  println("Horas max trafico web--")
+  nasa.select(col("timestamp")).groupBy(hour(col("timestamp")).alias("Hours"))
+  .agg(count("*").alias("Trafico"))
+  .orderBy(col("Hours").desc)
+  .show(24)
+
+//- # ¿Cuál es el número de errores 404 que ha habido cada día?
+  println("Num errores 404--")
+  nasa.select(col("timestamp"),
+    col("status")).where(col("status") === 404)
+    .groupBy(hour(col("timestamp")).alias("Hours"))
+    .agg(count("*").alias("Errors"))
+    .orderBy(col("Hours").desc)
+    .show(24)
+
+
+
 
 
 
