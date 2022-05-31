@@ -131,14 +131,14 @@ object Main extends App{
   .orderBy(col("Hours").desc)
   .show(24)
 
-//- # ¿Cuál es el número de errores 404 que ha habido cada día?
+//- # ¿Cuál es el número de errores 404 que ha habido cada día? ex cada día de la primera semana
   println("Num errores 404--")
   nasa.select(col("timestamp"),
     col("status")).where(col("status") === 404)
-    .groupBy(hour(col("timestamp")).alias("Hours"))
+    .groupBy(dayofweek(col("timestamp")).alias("Days"))
     .agg(count("*").alias("Errors"))
-    .orderBy(col("Hours").desc)
-    .show(24)
+    .orderBy(col("Days").desc)
+    .show(7)
 
 
 
